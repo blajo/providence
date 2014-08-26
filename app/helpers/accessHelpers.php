@@ -629,7 +629,7 @@
 			$va_return_values[] = $vn_id;
 		}
 		
-		if (sizeof($pm_id) == 1) { return (sizeof($va_return_values) > 0) ? true : false; }
+		if (!is_array($pm_id) == 1) { return (sizeof($va_return_values) > 0) ? true : false; }
 		return $va_return_values;
 	}
 	# ---------------------------------------------------------------------------------------------

@@ -118,7 +118,7 @@
 			} else {
 				$va_can_read = $qr_reps->getAllFieldValues('representation_id');
 			}
-			
+			if (!is_array($va_can_read)) { $va_can_read = array(); }
 			$qr_reps->seek(0);
 			while($qr_reps->nextRow()) {
 				$vn_rep_id = $qr_reps->get('representation_id');
