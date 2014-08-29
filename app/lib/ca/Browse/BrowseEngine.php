@@ -553,7 +553,9 @@
 					if (($vs_table_name = $vs_loc_table_name) == 'ca_objects_x_storage_locations') {
 						$vs_table_name = 'ca_storage_locations';
 					}
-					if (isset($va_collapse_map[$vs_table_name][$va_tmp[1]])) {
+					if ((string)$pn_row_id === "0") {
+						return $va_facet_info['include_none_option'] ? $va_facet_info['include_none_option'] : _t('No location specified');
+					} elseif (isset($va_collapse_map[$vs_table_name][$va_tmp[1]])) {
 						// Class/subclass is collapsable
 						return $va_collapse_map[$vs_table_name][$va_tmp[1]];
 					} elseif(isset($va_collapse_map[$vs_table_name]['*'])) {
@@ -1478,14 +1480,23 @@
 									foreach($va_row_ids as $vn_row_id) {
 										$vn_row_id = urldecode($vn_row_id);
 										$va_row_tmp = explode(":", $vn_row_id);
+										
+										if ((string)$vn_row_id === "0") {
+											$vs_where_sql = "({$this->ops_browse_table_name}.current_loc_class IS NULL)
+												AND ({$this->ops_browse_table_name}.current_loc_subclass IS NULL)
+												AND ({$this->ops_browse_table_name}.current_loc_id IS NULL)";
+												$va_row_tmp = array();
+										} else {
+											$vs_where_sql = "({$this->ops_browse_table_name}.current_loc_class = ?)"
+														.((sizeof($va_row_tmp) > 1) ? " AND ({$this->ops_browse_table_name}.current_loc_subclass = ?)" : "")
+														.((sizeof($va_row_tmp) > 2) ? " AND ({$this->ops_browse_table_name}.current_loc_id = ?)" : "");
+										}
 										if ($vn_i == 0) {
 											$vs_sql = "
 												SELECT ".$this->ops_browse_table_name.'.'.$t_item->primaryKey()."
 												FROM ".$this->ops_browse_table_name."
 												WHERE
-													({$this->ops_browse_table_name}.current_loc_class = ?)"
-														.((sizeof($va_row_tmp) > 1) ? " AND ({$this->ops_browse_table_name}.current_loc_subclass = ?)" : "")
-														.((sizeof($va_row_tmp) > 2) ? " AND ({$this->ops_browse_table_name}.current_loc_id = ?)" : "");
+													{$vs_where_sql}";
 													
 											$qr_res = $this->opo_db->query($vs_sql, $va_row_tmp);
 										} else {
@@ -1493,9 +1504,7 @@
 												SELECT ".$this->ops_browse_table_name.'.'.$t_item->primaryKey()."
 												FROM ".$this->ops_browse_table_name."
 												WHERE
-													({$this->ops_browse_table_name}.current_loc_class = ?)"
-														.((sizeof($va_row_tmp) > 1) ? " AND ({$this->ops_browse_table_name}.current_loc_subclass = ?)" : "")
-														.((sizeof($va_row_tmp) > 2) ? " AND ({$this->ops_browse_table_name}.current_loc_id = ?)" : "");
+													{$vs_where_sql}";
 													
 											$qr_res = $this->opo_db->query($vs_sql, $va_row_tmp);
 											
@@ -2883,7 +2892,14 @@
 						if (!is_null($vs_single_value) && !$vb_single_value_is_present) {
 							return array();
 						}
-						return caSortArrayByKeyInValue($va_values, array('label'));
+						$va_values = caSortArrayByKeyInValue($va_values, array('label'));
+						
+						// Add "no location specified" option if configured
+						if ($vs_none_label = caGetOption('include_none_option', $va_facet_info, false)) {
+							array_unshift($va_values, array('id' => 0, 'label' => $vs_none_label));
+						}
+						
+						return $va_values;
 					}
 					
 					return array();
