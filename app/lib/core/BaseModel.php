@@ -6639,6 +6639,7 @@ class BaseModel extends BaseObject {
 	 * @return int root id
 	 */
 	public function getHierarchyRootID($pn_hierarchy_id=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$vn_root_id = null;
 		
 		$o_db = $this->getDb();
@@ -6714,6 +6715,7 @@ class BaseModel extends BaseObject {
 	 * @return Mixed DbResult or array
 	 */
 	public function &getHierarchy($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		if (!is_array($pa_options)) { $pa_options = array(); }
 		$vs_table_name = $this->tableName();
 		
@@ -6850,6 +6852,7 @@ class BaseModel extends BaseObject {
 	 * @return array
 	 */
 	public function &getHierarchyAsList($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$pb_ids_only 					= caGetOption('idsOnly', $pa_options, false);
 		$pn_max_levels 					= caGetOption('maxLevels', $pa_options, null, array('cast' => 'int'));
 		$ps_additional_table_to_join 	= caGetOption('additionalTableToJoin', $pa_options, null);
@@ -6924,6 +6927,7 @@ class BaseModel extends BaseObject {
 	 * @return array id list
 	 */
 	public function getHierarchyIDs($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		if(!is_array($pa_options)) { $pa_options = array(); }
 		return $this->getHierarchyAsList($pn_id, array_merge($pa_options, array('idsOnly' => true)));
 	}
@@ -6994,6 +6998,7 @@ class BaseModel extends BaseObject {
 	 * @return DbResult 
 	 */
 	public function &getHierarchyChildrenAsQuery($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$o_db = $this->getDb();
 			
 		$vs_table_name = $this->tableName();
@@ -7143,6 +7148,7 @@ class BaseModel extends BaseObject {
 	 * @return array 
 	 */
 	public function getHierarchyChildren($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$pb_ids_only = (isset($pa_options['idsOnly']) && $pa_options['idsOnly']) ? true : false;
 		
 		if (!$pn_id) { $pn_id = $this->getPrimaryKey(); }
@@ -7182,6 +7188,7 @@ class BaseModel extends BaseObject {
 	 * @return array 
 	 */
 	public function getHierarchySiblings($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$pb_ids_only = (isset($pa_options['idsOnly']) && $pa_options['idsOnly']) ? true : false;
 		
 		if (!$pn_id) { $pn_id = $this->getPrimaryKey(); }
@@ -7241,6 +7248,7 @@ class BaseModel extends BaseObject {
 	 * @return array 
 	 */
 	public function &getHierarchyAncestors($pn_id=null, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$pb_include_self = (isset($pa_options['includeSelf']) && $pa_options['includeSelf']) ? true : false;
 		$pb_ids_only = (isset($pa_options['idsOnly']) && $pa_options['idsOnly']) ? true : false;
 		
@@ -7388,6 +7396,7 @@ class BaseModel extends BaseObject {
 	 * @return array
 	 */
 	public function hierarchyWithTemplate($ps_template, $pa_options=null) {
+		if (!$this->isHierarchical()) { return null; }
 		$vs_pk = $this->primaryKey();
 		$pn_id = caGetOption($vs_pk, $pa_options, null);
 		$va_hier = $this->getHierarchyAsList($pn_id, array_merge($pa_options, array('idsOnly' => false)));
