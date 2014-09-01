@@ -182,6 +182,7 @@
  			
  			// parse units of measurement
  			if (preg_match("!^([\d\.\,/ ]+)[ ]*([^\d ]+)!", $ps_value, $va_matches)) {	
+ 				$va_matches[1] = str_replace(",", "", $va_matches[1]);
 				$va_values = explode(" ", $va_matches[1]);
 				$vs_value  = 0;
 				foreach($va_values as $vs_v) {
