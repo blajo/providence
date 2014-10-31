@@ -70,7 +70,7 @@ class ExcelDataReader extends BaseDataReader {
 	public function read($ps_source, $pa_options=null) {
 		try {
 			$this->opo_handle = PHPExcel_IOFactory::load($ps_source);
-			$this->opo_handle->setActiveSheet(caGetOption('dataset', $pa_options, 0));
+			$this->opo_handle->setActiveSheetIndex(caGetOption('dataset', $pa_options, 0));
 			$o_sheet = $this->opo_handle->getActiveSheet();
 			$this->opo_rows = $o_sheet->getRowIterator();
 			$this->opn_current_row = 0;
@@ -204,6 +204,25 @@ class ExcelDataReader extends BaseDataReader {
 	 */
 	public function getDatasetCount() {
 		return $this->opo_handle->getSheetCount();
+	}
+	# -------------------------------------------------------
+	/**
+	 * Set current dataset for reading and reset current row to beginning
+	 * 
+	 * @param mixed $pm_dataset The number of the worksheet to read (starting at zero) [Default=0]
+	 * @return bool
+	 */
+	public function setCurrentDataset($pn_dataset=0) {
+		if (($pn_dataset < 0) || ($pn_dataset >= $this->getDatasetCount())) { return false; }
+		try {
+			$this->opo_handle->setActiveSheetIndex($pn_dataset);
+			$o_sheet = $this->opo_handle->getActiveSheet();
+			$this->opo_rows = $o_sheet->getRowIterator();
+			$this->opn_current_row = 0;
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 	# -------------------------------------------------------
 }
