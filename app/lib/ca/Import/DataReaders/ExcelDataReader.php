@@ -126,7 +126,6 @@ class ExcelDataReader extends BaseDataReader {
 				}
 				if (!$vb_val_was_set) { 
 					//return $this->nextRow(); 
-					print "no val!";
 					continue;
 				}	// skip completely blank rows
 			
@@ -232,7 +231,7 @@ class ExcelDataReader extends BaseDataReader {
 		if (($pn_dataset < 0) || ($pn_dataset >= $this->getDatasetCount())) { return false; }
 		try {
 			$this->opo_handle->setActiveSheetIndex($pn_dataset);
-			$o_sheet = $this->opo_handle->getActiveSheet();
+			$o_sheet = $this->opo_handle->getSheet($pn_dataset);
 			$this->opo_rows = $o_sheet->getRowIterator();
 			$this->opn_current_row = 0;
 			return true;

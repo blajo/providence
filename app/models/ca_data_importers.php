@@ -1269,12 +1269,10 @@ class ca_data_importers extends BundlableLabelableBaseModelWithAttributes {
 		
 		$o_log->logDebug(_t('Finished reading input source at %1 seconds', $t->getTime(4)));
 		
-		if ($vb_import_all_datasets && $o_reader->hasMultipleDatasets() && ($o_reader->getDatasetCount() > 1)) {
+	$vn_dataset_count = $vb_import_all_datasets ? (int)$o_reader->getDatasetCount() : 1;
+	for($vn_dataset=0; $vn_dataset < $vn_dataset_count; $vn_dataset++) {
+		if (!$o_reader->setCurrentDataset($vn_dataset)) { continue; }
 		
-		}
-	for($vn_dataset=0; $vn_dataset < $o_reader->getDatasetCount(); $vn_dataset++) {
-		if (!$o_reader->setCurrentDataset($vn_dataset)) { print "SKIP dataset $vn_dataset<br>\n";continue; }
-		print "RUN DATASET $vn_dataset<br>\n";
 		$vn_num_items = $o_reader->numRows();
 		$o_log->logDebug(_t('Found %1 rows in input source', $vn_num_items));
 
@@ -1395,6 +1393,7 @@ class ca_data_importers extends BundlableLabelableBaseModelWithAttributes {
 				
 				if (!($o_env_reader = $t_mapping->getDataReader($ps_source, $ps_format))) { break; }
 				if(!$o_env_reader->read($ps_source, array('basePath' => ''))) { break; }
+				$o_env_reader->setCurrentDataset($vn_dataset);
 				$o_env_reader->nextRow();
 				switch(sizeof($va_env_tmp)) {
 					case 1:
